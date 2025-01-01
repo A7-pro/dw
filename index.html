@@ -23,6 +23,13 @@
         .section {
             text-align: center;
             padding: 30px 20px;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .section.active {
+            display: block;
+            opacity: 1;
         }
         .section h1 {
             font-size: 36px;
@@ -62,7 +69,6 @@
             font-size: 14px;
         }
         #login {
-            display: none;
             text-align: center;
             padding: 30px 20px;
         }
@@ -92,6 +98,19 @@
             height: 200px;
             margin-bottom: 10px;
         }
+        .back-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #D4AF37;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .back-button:hover {
+            background-color: #c9983b;
+        }
     </style>
 </head>
 <body>
@@ -99,14 +118,14 @@
         أذكار متنوعة
     </header>
 
-    <div id="login">
+    <div id="login" class="section active">
         <h1>تسجيل الدخول</h1>
         <input type="text" id="username" placeholder="اسم المستخدم">
         <input type="password" id="password" placeholder="كلمة المرور">
         <button onclick="login()">دخول</button>
     </div>
 
-    <div id="admin-panel">
+    <div id="admin-panel" class="section">
         <h1>لوحة التحكم</h1>
         <textarea id="azkar-content">[]</textarea>
         <button onclick="saveAzkar()">حفظ الأذكار</button>
@@ -126,9 +145,54 @@
         </div>
     </section>
 
-    <section id="morning" class="section" style="display: none;">
-        <h1>أذكار الصباح 🌅</h1>
-        <div class="azkar-list" id="morning-list"></div>
+    <section id="sleep" class="section">
+        <h1>أذكار النوم 🌙</h1>
+        <div class="azkar-list">
+            <h2>باسمك ربي وضعت جنبي</h2>
+            <p>"باسمك ربي وضعت جنبي وبك أرفعه، فإن أمسكت نفسي فارحمها، وإن أرسلتها فاحفظها بما تحفظ به عبادك الصالحين."</p>
+            <h2>اللهم قني عذابك</h2>
+            <p>"اللهم قني عذابك يوم تبعث عبادك."</p>
+            <h2>اللهم باسمك أموت وأحيا</h2>
+            <p>"اللهم باسمك أموت وأحيا."</p>
+            <h2>سبحان الله</h2>
+            <p>"سبحان الله (33 مرة)، الحمد لله (33 مرة)، الله أكبر (34 مرة)."</p>
+            <h2>آية الكرسي</h2>
+            <p>"اللّهُ لا إِلٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ..."</p>
+            <h2>آخر آيتين من سورة البقرة</h2>
+            <p>"آمَنَ الرَّسُولُ بِمَا أُنْزِلَ إِلَيْهِ مِنْ رَبِّهِ..."</p>
+        </div>
+        <button class="back-button" onclick="goBack()">رجوع</button>
+    </section>
+
+    <section id="waking" class="section">
+        <h1>أذكار الاستيقاظ 🌅</h1>
+        <div class="azkar-list">
+            <h2>الحمد لله الذي أحيانا</h2>
+            <p>"الحمد لله الذي أحيانا بعدما أماتنا وإليه النشور."</p>
+            <h2>لا إله إلا الله وحده</h2>
+            <p>"لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير، سبحان الله، والحمد لله، ولا إله إلا الله، والله أكبر، ولا حول ولا قوة إلا بالله العلي العظيم."</p>
+            <h2>اللهم عافني</h2>
+            <p>"اللهم عافني في بدني، اللهم عافني في سمعي، اللهم عافني في بصري، لا إله إلا أنت."</p>
+        </div>
+        <button class="back-button" onclick="goBack()">رجوع</button>
+    </section>
+
+    <section id="mosque-entry" class="section">
+        <h1>أذكار دخول المسجد 🕌</h1>
+        <div class="azkar-list">
+            <h2>اللهم افتح لي أبواب رحمتك</h2>
+            <p>"اللهم افتح لي أبواب رحمتك."</p>
+        </div>
+        <button class="back-button" onclick="goBack()">رجوع</button>
+    </section>
+
+    <section id="mosque-exit" class="section">
+        <h1>أذكار الخروج من المسجد 🕌</h1>
+        <div class="azkar-list">
+            <h2>اللهم إني أسألك من فضلك</h2>
+            <p>"اللهم إني أسألك من فضلك."</p>
+        </div>
+        <button class="back-button" onclick="goBack()">رجوع</button>
     </section>
 
     <footer>
@@ -136,44 +200,18 @@
     </footer>
 
     <script>
-        const storedAzkar = localStorage.getItem('azkar');
-        const azkar = storedAzkar ? JSON.parse(storedAzkar) : {
-            morning: [
-                "أصبحنا وأصبح الملك لله",
-                "اللهم بك أصبحنا",
-                "اللهم إني أسالك خير هذا اليوم",
-                "أعوذ بكلمات الله التامات",
-                "حسبي الله لا إله إلا هو"
-            ]
-        };
-
-        function toggleContent(element) {
-            const content = element.nextElementSibling;
-            if (content.style.display === "block") {
-                content.style.display = "none";
-            } else {
-                content.style.display = "block";
-            }
+        function goBack() {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById('categories').classList.add('active');
         }
 
         function showAzkar(category) {
-            const sections = document.querySelectorAll('.section');
-            sections.forEach(section => section.style.display = 'none');
-
-            const selectedSection = document.getElementById(category);
-            if (selectedSection) {
-                selectedSection.style.display = 'block';
-
-                const list = document.getElementById(`${category}-list`);
-                if (list) {
-                    list.innerHTML = '';
-                    azkar[category].forEach(item => {
-                        const el = document.createElement('h2');
-                        el.textContent = item;
-                        list.appendChild(el);
-                    });
-                }
-            }
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(category).classList.add('active');
         }
 
         function login() {
@@ -181,33 +219,14 @@
             const password = document.getElementById('password').value;
 
             if (username === 'a7be7@icloud.com' && password === 'a7be7') {
-                document.getElementById('login').style.display = 'none';
-                document.getElementById('admin-panel').style.display = 'block';
-                document.getElementById('categories').style.display = 'none';
-
-                document.getElementById('azkar-content').value = JSON.stringify(azkar, null, 2);
+                document.querySelectorAll('.section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                document.getElementById('categories').classList.add('active');
             } else {
                 alert('اسم المستخدم أو كلمة المرور غير صحيحة');
             }
         }
-
-        function saveAzkar() {
-            const content = document.getElementById('azkar-content').value;
-
-            try {
-                const updatedAzkar = JSON.parse(content);
-                localStorage.setItem('azkar', JSON.stringify(updatedAzkar));
-                alert('تم حفظ الأذكار بنجاح');
-            } catch (error) {
-                alert('حدث خطأ في حفظ الأذكار');
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            if (!storedAzkar) {
-                localStorage.setItem('azkar', JSON.stringify(azkar));
-            }
-        });
     </script>
 </body>
 </html>
